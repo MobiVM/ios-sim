@@ -461,7 +461,7 @@ NSString* FindDeveloperDir() {
       } else if (strcmp(argv[i], "--timeout") == 0) {
         if (i + 1 < argc) {
           timeout = [[NSString stringWithUTF8String:argv[++i]] doubleValue];
-          NSLog(@"Timeout: %f second(s)", timeout);
+          //NSLog(@"Timeout: %f second(s)", timeout);
         }
       }
       else if (strcmp(argv[i], "--sdk") == 0) {
@@ -504,17 +504,17 @@ NSString* FindDeveloperDir() {
       } else if (strcmp(argv[i], "--stdout") == 0) {
         i++;
         stdoutPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
-        NSLog(@"stdoutPath: %@", stdoutPath);
+        //NSLog(@"stdoutPath: %@", stdoutPath);
       } else if (strcmp(argv[i], "--stderr") == 0) {
           i++;
           stderrPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
-          NSLog(@"stderrPath: %@", stderrPath);
+          //NSLog(@"stderrPath: %@", stderrPath);
       } else if (strcmp(argv[i], "--unbuffered") == 0) {
           setbuf(stdout, NULL);
       } else if (strcmp(argv[i], "--xctest") == 0) {
           i++;
           xctest = [[NSString stringWithUTF8String:argv[i]] expandPath];
-          NSLog(@"xctest: %@", xctest);
+          //NSLog(@"xctest: %@", xctest);
       } else if (strcmp(argv[i], "--retina") == 0) {
           retinaDevice = YES;
       } else if (strcmp(argv[i], "--tall") == 0) {
