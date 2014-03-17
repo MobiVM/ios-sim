@@ -182,6 +182,12 @@ NSString* FindDeveloperDir() {
   exit(EXIT_SUCCESS);
 }
 
+static int simulatedApplicationPID;
+static void killed(int signum)
+{
+  kill(simulatedApplicationPID, SIGTERM);
+  _exit(0);
+}
 
 - (void)session:(DTiPhoneSimulatorSession *)session didStart:(BOOL)started withError:(NSError *)error {
   if (startOnly && session) {
@@ -189,6 +195,10 @@ NSString* FindDeveloperDir() {
     exit(EXIT_SUCCESS);
   }
   if (started) {
+      simulatedApplicationPID = [session simulatedApplicationPID];
+      signal(SIGINT, killed);
+      signal(SIGTERM, killed);
+
       if (shouldStartDebugger) {
         int pid  = [session simulatedApplicationPID];
         char*args[4] = { NULL, NULL, (char*)[[@(pid) description] UTF8String], NULL };
