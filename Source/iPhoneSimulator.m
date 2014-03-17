@@ -509,7 +509,7 @@ NSString* FindDeveloperDir() {
           i++;
           stderrPath = [[NSString stringWithUTF8String:argv[i]] expandPath];
           NSLog(@"stderrPath: %@", stderrPath);
-      } else if (strcmp(argv[i], "--unbuffered")) {
+      } else if (strcmp(argv[i], "--unbuffered") == 0) {
           setbuf(stdout, NULL);
       } else if (strcmp(argv[i], "--xctest") == 0) {
           i++;
