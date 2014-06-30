@@ -39,6 +39,7 @@ NSString* const kDevToolsFoundationRelativePath = @"../OtherFrameworks/DevToolsF
 NSString* const kSimulatorRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app";
 NSString* const kCoreSimulatorRelativePath = @"Library/PrivateFrameworks/CoreSimulator.framework";
 
+static pid_t gDebuggerProcessId;
 
 @interface DVTPlatform : NSObject
 + (BOOL)loadAllPlatformsReturningError:(id*)arg1;
@@ -255,6 +256,9 @@ static void killed(int signum)
             nsprintf(@"Could not start debugger process: %@", errno);
             exit(EXIT_FAILURE);
         }
+        gDebuggerProcessId = child_pid;
+        signal(SIGINT, IgnoreSignal);
+        signal(SIGCHLD, ChildSignal);
       }
     if (verbose) {
       nsprintf(@"Session started");
