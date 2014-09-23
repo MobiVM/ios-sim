@@ -208,7 +208,7 @@ NSString* FindDeveloperDir() {
 }
 
 - (void) printDeprecation:(char*)option {
-    fprintf(stderr, "Usage of '%s' is deprecated in 3.x. Use --devicetypeid instead.\n", option);
+    // fprintf(stderr, "Usage of '%s' is deprecated in 3.x. Use --devicetypeid instead.\n", option);
 }
 
 
