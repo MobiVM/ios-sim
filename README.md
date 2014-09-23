@@ -1,31 +1,69 @@
 ios-sim
 =======
 
+Supports Xcode 6 only since version 3.x.
+
 The ios-sim tool is a command-line utility that launches an iOS application on
 the iOS Simulator. This allows for niceties such as automated testing without
-having to open XCode.
+having to open Xcode.
 
 Features
 --------
 
-* Choose the device family to simulate, i.e. iPhone or iPad.
+* Choose the device family to simulate, i.e. iPhone or iPad. Run using "showdevicetypes" option to see available device types, and pass it in as the "devicetypeid" parameter.
 * Setup environment variables.
 * Pass arguments to the application.
 * See the stdout and stderr, or redirect them to files.
 
 See the `--help` option for more info.
 
+Usage
+-----
+
+```
+Usage: ios-sim <command> <options> [--args ...]
+
+Commands:
+  showsdks                        List the available iOS SDK versions
+  showdevicetypes                 List the available device types (Xcode6+)
+  launch <application path>       Launch the application at the specified path on the iOS Simulator
+  start                           Launch iOS Simulator without an app
+
+Options:
+  --version                       Print the version of ios-sim
+  --help                          Show this help text
+  --verbose                       Set the output level to verbose
+  --exit                          Exit after startup
+  --debug                         Attach LLDB to the application on startup
+  --use-gdb                       Use GDB instead of LLDB. (Requires --debug)
+  --uuid <uuid>                   A UUID identifying the session (is that correct?)
+  --env <environment file path>   A plist file containing environment key-value pairs that should be set
+  --setenv NAME=VALUE             Set an environment variable
+  --stdout <stdout file path>     The path where stdout of the simulator will be redirected to (defaults to stdout of ios-sim)
+  --stderr <stderr file path>     The path where stderr of the simulator will be redirected to (defaults to stderr of ios-sim)
+  --timeout <seconds>             The timeout time to wait for a response from the Simulator. Default value: 30 seconds
+  --args <...>                    All following arguments will be passed on to the application
+  --devicetypeid <device type>    The id of the device type that should be simulated (Xcode6+). Use 'showdevicetypes' to list devices.
+                                  e.g "com.apple.CoreSimulator.SimDeviceType.Resizable-iPhone6, 8.0"
+DEPRECATED in 3.x, use devicetypeid instead:
+  --sdk <sdkversion>              The iOS SDK version to run the application on (defaults to the latest)
+  --family <device family>        The device type that should be simulated (defaults to `iphone')
+  --retina                        Start a retina device
+  --tall                          In combination with --retina flag, start the tall version of the retina device (e.g. iPhone 5 (4-inch))
+  --64bit                         In combination with --retina flag and the --tall flag, start the 64bit version of the tall retina device (e.g. iPhone 5S (4-inch 64bit))
+```
+
 Installation
 ------------
 
 With node.js (at least 0.10.20):
 
-    $ sudo npm install ios-sim -g
+    $ npm install ios-sim -g
 
 Download an archive:
 
-    $ curl -L https://github.com/phonegap/ios-sim/zipball/1.9.0 -o ios-sim-1.9.0.zip
-    $ unzip ios-sim-1.9.0.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/3.0.0 -o ios-sim-3.0.0.zip
+    $ unzip ios-sim-3.0.0.zip
 
 Or from a git clone:
 
@@ -45,7 +83,7 @@ Make sure you enable Developer Mode on your machine:
 Make sure multiple instances of launchd_sim are not running:
     
     $ killall launchd_sim
-
+    
 Development
 -----------
 
