@@ -439,7 +439,7 @@ static void killed(int signum)
 
     // The iOS 8 simulator treats stdout/stderr paths relative to the simulator's data directory.
     // Create symbolic links in the data directory that points at the real stdout/stderr paths.
-    if ([config.simulatedSystemRoot.sdkVersion isEqual:@"8.0"]) {
+    if ([config.simulatedSystemRoot.sdkVersion characterAtIndex:0] == '8') {
       NSString* dataPath = config.device.dataPath;
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stdoutPath] withDestinationPath:stdoutPath error:NULL];
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stderrPath] withDestinationPath:stderrPath error:NULL];
