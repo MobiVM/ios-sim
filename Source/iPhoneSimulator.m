@@ -305,6 +305,13 @@ static void killed(int signum)
     }
   } else {
     nsprintf(@"Session could not be started: %@", error);
+      
+    int fd = open([[[session sessionConfig] simulatedApplicationStdErrPath] UTF8String], O_WRONLY | O_NDELAY);
+    close(fd);
+      
+    fd = open([[[session sessionConfig] simulatedApplicationStdOutPath] UTF8String], O_WRONLY | O_NDELAY);
+    close(fd);
+      
     exit(EXIT_FAILURE);
   }
 }
