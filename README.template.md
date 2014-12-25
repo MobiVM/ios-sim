@@ -82,7 +82,13 @@ Make sure you enable Developer Mode on your machine:
 
 Make sure multiple instances of launchd_sim are not running:
     
-    $ killall launchd_sim
+    $ sudo ps -A | grep -e "launchd_sim" -e "simulator" -i | grep -v grep | awk '{print $1}' | xargs kill -9
+    
+This kills three types of processes:
+
+1. `xcode-select --print-path`/Applications/iOS Simulator.app process
+2. com.apple.CoreSimulator.CoreSimulatorService service
+3. `xcode-select --print-path`/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk processes
     
 Development
 -----------

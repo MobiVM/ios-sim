@@ -62,8 +62,8 @@ With node.js (at least 0.10.20):
 
 Download an archive:
 
-    $ curl -L https://github.com/phonegap/ios-sim/zipball/3.0.0 -o ios-sim-3.0.0.zip
-    $ unzip ios-sim-3.0.0.zip
+    $ curl -L https://github.com/phonegap/ios-sim/zipball/3.1.1 -o ios-sim-3.1.1.zip
+    $ unzip ios-sim-3.1.1.zip
 
 Or from a git clone:
 
@@ -82,7 +82,13 @@ Make sure you enable Developer Mode on your machine:
 
 Make sure multiple instances of launchd_sim are not running:
     
-    $ killall launchd_sim
+    $ sudo ps -A | grep -e "launchd_sim" -e "simulator" -i | grep -v grep | awk '{print $1}' | xargs kill -9
+    
+This kills three types of processes:
+
+1. `xcode-select --print-path`/Applications/iOS Simulator.app process
+2. com.apple.CoreSimulator.CoreSimulatorService service
+3. `xcode-select --print-path`/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk processes
     
 Development
 -----------

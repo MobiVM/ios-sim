@@ -41,6 +41,8 @@ NSString* const kDevToolsFoundationRelativePath = @"../OtherFrameworks/DevToolsF
 NSString* const kSimulatorRelativePath = @"Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app";
 NSString* const kCoreSimulatorRelativePath = @"Library/PrivateFrameworks/CoreSimulator.framework";
 
+static pid_t gDebuggerProcessId;
+
 @interface DVTPlatform : NSObject
 + (BOOL)loadAllPlatformsReturningError:(id*)arg1;
 @end
@@ -69,7 +71,7 @@ NSString* const kCoreSimulatorRelativePath = @"Library/PrivateFrameworks/CoreSim
     NSBundle* dvtFoundationBundle =
     [NSBundle bundleWithPath:dvtFoundationPath];
     if (![dvtFoundationBundle load]){
-        nsprintf(@"Unable to dvtFoundationBundle. Error: ");
+        nsprintf(@"Unable to dvtFoundationBundle %@", dvtFoundationPath);
         exit(EXIT_FAILURE);
         return ;
     }
@@ -77,19 +79,19 @@ NSString* const kCoreSimulatorRelativePath = @"Library/PrivateFrameworks/CoreSim
     NSBundle* devToolsFoundationBundle =
     [NSBundle bundleWithPath:devToolsFoundationPath];
     if (![devToolsFoundationBundle load]){
-        nsprintf(@"Unable to devToolsFoundationPath. Error: ");
+        nsprintf(@"Unable to devToolsFoundationPath %@", devToolsFoundationPath);
         return ;
     }
     NSString* coreSimulatorPath = [developerDir stringByAppendingPathComponent:kCoreSimulatorRelativePath];
     if ([[NSFileManager defaultManager] fileExistsAtPath:coreSimulatorPath]) {
         NSBundle* coreSimulatorBundle = [NSBundle bundleWithPath:coreSimulatorPath];
         if (![coreSimulatorBundle load]){
-            nsprintf(@"Unable to coreSimulatorPath. Error: ");
+            nsprintf(@"Unable to coreSimulatorPath %@", coreSimulatorPath);
             return ;
         }
     }
     // Prime DVTPlatform.
-    NSError* error;
+    NSError* error = nil;
     Class DVTPlatformClass = [self FindClassByName:@"DVTPlatform"];
     if (![DVTPlatformClass loadAllPlatformsReturningError:&error]) {
         nsprintf(@"Unable to loadAllPlatformsReturningError. Error: %@",[error localizedDescription]);
@@ -101,10 +103,9 @@ NSString* const kCoreSimulatorRelativePath = @"Library/PrivateFrameworks/CoreSim
     }
     NSBundle* simBundle = [NSBundle bundleWithPath:simBundlePath];
     if (![simBundle load]){
-        nsprintf(@"Unable to load simulator framework. Error: %@",[error localizedDescription]);
+        nsprintf(@"Unable to load simulator bundle %@", simBundlePath);
         return ;
     }
-    return ;
 }
 
 NSString* GetXcodeVersion() {
@@ -368,6 +369,11 @@ static void killed(int signum)
 }
 
 
+- (BOOL) version:(NSString*)versionA isAtLeastVersion:(NSString*)versionB 
+{
+    return ([versionA compare:versionB options:NSNumericSearch] != NSOrderedAscending);
+}
+
 - (int)launchApp:(NSString *)path withFamily:(NSString *)family
                                         uuid:(NSString *)uuid
                                  environment:(NSDictionary *)environment
@@ -378,7 +384,7 @@ static void killed(int signum)
   DTiPhoneSimulatorApplicationSpecifier *appSpec;
   DTiPhoneSimulatorSessionConfig *config;
   DTiPhoneSimulatorSession *session;
-  NSError *error;
+  NSError *error = nil;
 
   NSFileManager *fileManager = [[[NSFileManager alloc] init] autorelease];
   if (!startOnly && ![fileManager fileExistsAtPath:path]) {
@@ -446,7 +452,7 @@ static void killed(int signum)
 
     // The iOS 8 simulator treats stdout/stderr paths relative to the simulator's data directory.
     // Create symbolic links in the data directory that points at the real stdout/stderr paths.
-    if ([config.simulatedSystemRoot.sdkVersion characterAtIndex:0] == '8') {
+    if ([self version:config.simulatedSystemRoot.sdkVersion isAtLeastVersion:@"8.0"]) {
       NSString* dataPath = config.device.dataPath;
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stdoutPath] withDestinationPath:stdoutPath error:NULL];
       [[NSFileManager defaultManager] createSymbolicLinkAtPath:[dataPath stringByAppendingPathComponent:stderrPath] withDestinationPath:stderrPath error:NULL];
@@ -465,7 +471,7 @@ static void killed(int signum)
   }
 
   if (![session requestStartWithConfig:config timeout:timeout error:&error]) {
-    nsprintf(@"Could not start simulator session: %@", error);
+    nsprintf(@"Could not start simulator session: %@", [error localizedDescription]);
     return EXIT_FAILURE;
   }
 
