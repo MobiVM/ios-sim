@@ -10,6 +10,8 @@
 #import "nsprintf.h"
 #import <sys/types.h>
 #import <sys/stat.h>
+#include <mach/machine.h>
+
 @class DTiPhoneSimulatorSystemRoot;
 
 NSString *simulatorPrefrencesName = @"com.apple.iphonesimulator";
@@ -232,7 +234,15 @@ NSString* FindDeveloperDir() {
         SimDeviceSet* deviceSet = [simDeviceSet defaultSet];
         NSArray* devices = [deviceSet availableDevices];
         for (SimDevice* device in devices) {
-            nsfprintf(stderr, @"%@, %@", device.deviceType.identifier, device.runtime.versionString);
+            NSMutableArray* archs = [NSMutableArray arrayWithCapacity:[device.deviceType.supportedArchs count]];
+            for (NSNumber* archId in device.deviceType.supportedArchs) {
+                if ([archId intValue] & CPU_ARCH_ABI64) {
+                    [archs addObject:@"x86_64"];
+                } else {
+                    [archs addObject:@"i386"];
+                }
+            }
+            nsfprintf(stderr, @"%@, %@, (%@)", device.deviceType.identifier, device.runtime.versionString, [archs componentsJoinedByString:@" "]);
         }
     }
 
